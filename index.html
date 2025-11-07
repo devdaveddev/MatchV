@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Name Search</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input { width: 80%; padding: 8px; font-size: 16px; }
+    button { padding: 8px 12px; font-size: 16px; margin-left: 8px; cursor: pointer; }
+    .result { border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 6px; }
+    .score { font-size: 12px; color: gray; }
+  </style>
+</head>
+<body>
+  <h2>Search Names</h2>
+  <input type="text" id="query" placeholder="Enter name..." />
+  <button onclick="searchNames()">Search</button>
+
+  <div id="results"></div>
+
+  <script>
+    async function searchNames() {
+      const query = document.getElementById('query').value.trim();
+      if (!query) return;
+
+      const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      data.forEach(person => {
+        const div = document.createElement('div');
+        div.className = 'result';
+
+        div.innerHTML = `
+          <strong>${person['First Name']} ${person['Last Name']}</strong><br>
+          Age: ${person['Age'] || 'N/A'}<br>
+          Phone: ${person['Phone'] || 'N/A'}<br>
+          Address: ${person['Address'] || 'N/A'}<br>
+          <span class="score">Match Score: ${person['match_score']}</span>
+        `;
+
+        resultsDiv.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
